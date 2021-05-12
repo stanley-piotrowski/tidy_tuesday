@@ -40,7 +40,7 @@ broadband <- broadband %>%
 
 # It looks like there are some states with missing data
 # Summary plot to visualize the distribution of missing data across states
-broadband %>% 
+missing_data_by_state <- broadband %>% 
   mutate(broadband_availability_per_fcc = str_replace(broadband_availability_per_fcc, 
                                                       "-", "NA")) %>% 
   filter(broadband_availability_per_fcc == "NA") %>% 
@@ -52,7 +52,7 @@ broadband %>%
              color = "black") +
   geom_bar(stat = "identity",
            fill = "lightskyblue", 
-           alpha = 0.75) +
+           alpha = 0.65) +
   expand_limits(x = 0, y = 15) +
   scale_y_continuous(expand = c(0, 0)) +
   labs(x = "State", 
@@ -61,6 +61,9 @@ broadband %>%
        subtitle = "Alaska (AK) had the highest number of counties (15) with missing broadband internet data in 2017,<br>followed by Texas (TX; 6), Virginia (VA; 3), and Idaho (ID; 2).  The remaining states had missing<br>data in one county.", 
        caption = "Source: Microsoft (https://github.com/microsoft/USBroadbandUsagePercentages)") +
   my_theme
+
+# Save output plot
+ggsave("missing_data_by_state.png")
 
 # Boxplot ----
 # Explore the distribution of broadband by state
