@@ -57,13 +57,15 @@ missing_data_by_state <- broadband %>%
   scale_y_continuous(expand = c(0, 0)) +
   labs(x = "State", 
        y = "Count", 
-       title = "<strong>Missing Broadband Data</strong>", 
-       subtitle = "Alaska (AK) had the highest number of counties (15) with missing broadband internet data in 2017,<br>followed by Texas (TX; 6), Virginia (VA; 3), and Idaho (ID; 2).  The remaining states had missing<br>data in one county.", 
+       title = "<strong>Missing Broadband Data by State</strong>", 
+       subtitle = "Alaska (AK) had the highest number of counties (15) with missing broadband internet data
+                in 2017,<br>followed by Texas (TX; 6), Virginia (VA; 3), and Idaho (ID; 2).  The remaining
+                states had missing<br>data in one county.", 
        caption = "Source: Microsoft (https://github.com/microsoft/USBroadbandUsagePercentages)") +
   my_theme
 
-# Save output plot
-ggsave("missing_data_by_state.png")
+# Take a look at the plot before saving
+missing_data_by_state
 
 # Boxplot ----
 # Explore the distribution of broadband by state
