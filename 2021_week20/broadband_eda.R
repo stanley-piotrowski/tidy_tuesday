@@ -4,6 +4,25 @@
 # Setup ----
 library(tidyverse)
 library(tidytuesdayR)
+library(janitor)
+library(ggtext)
+
+# Set ggplot2 theme ----
+my_theme <- theme(
+  
+  # Customize panels
+  panel.background = element_rect(fill = "white", color = "black"),
+  panel.grid = element_blank(),
+  
+  # Customize titles, axes, and caption
+  plot.title = element_markdown(size = 20),
+  plot.subtitle = element_markdown(),
+  plot.caption = element_text(face = "italic"),
+  axis.title.x = element_text(size = 14), 
+  axis.title.y = element_text(size = 14)
+  
+  # Adjust y-axis scale
+)
 
 # Data ----
 # Load the larger zip code data from the tidytuesdayR package
@@ -28,9 +47,20 @@ broadband %>%
   group_by(st) %>% 
   summarise(n = n()) %>% 
   ggplot(aes(reorder(st, -n), n)) +
-  geom_bar(stat = "identity")
-  
-# Add more to plot 
+  geom_hline(yintercept = c(5, 10),
+             linetype = "dotted", 
+             color = "black") +
+  geom_bar(stat = "identity",
+           fill = "lightskyblue", 
+           alpha = 0.75) +
+  expand_limits(x = 0, y = 15) +
+  scale_y_continuous(expand = c(0, 0)) +
+  labs(x = "State", 
+       y = "Count", 
+       title = "<strong>Missing Broadband Data</strong>", 
+       subtitle = "Alaska (AK) had the highest number of counties (15) with missing broadband internet data in 2017,<br>followed by Texas (TX; 6), Virginia (VA; 3), and Idaho (ID; 2).  The remaining states had missing<br>data in one county.", 
+       caption = "Source: Microsoft (https://github.com/microsoft/USBroadbandUsagePercentages)") +
+  my_theme
 
 # Boxplot ----
 # Explore the distribution of broadband by state
@@ -38,5 +68,5 @@ broadband %>%
   clean_names() %>% 
   filter(grepl("A[A-Z]", st)) %>% View()
   ggplot(aes(st, broadband_availability_per_fcc, group = st)) +
-  geom_boxplot()
-  scale_y_continuous(n.breaks = 4)
+  geom_boxplot() +
+  scale_y_continuous(expand = c(0, 0))
