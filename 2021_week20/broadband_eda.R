@@ -9,6 +9,8 @@ library(ggtext)
 library(ggridges)
 library(tigris) # Working with shape files
 library(zipcodeR)
+library(paletteer) # for elegant plotting on maps
+library(viridis)
 
 # Set ggplot2 theme ----
 my_theme <- theme(
@@ -33,7 +35,8 @@ tuesdata <- tidytuesdayR::tt_load("2021-05-11")
 broadband <- tuesdata$broadband
 
 # For the detailed analysis, we'll use the broadband zipcode data
-broadband_zip <- tuesdata$broadband_zip
+broadband_zip <- tuesdata$broadband_zip %>% 
+  clean_names()
 
 # Explore data
 glimpse(broadband)
@@ -110,21 +113,46 @@ broadband_avail_summary %>%
 
 # Explore NJ data further ----
 # Here, we'll use the tigris package to grab shape files from the TIGER/Line repository from the US Census Bureau
+# Briefly, TIGER stands for Topographically Integrated Geographic Encoding and Referencing system used by the Census Bureau to describe land features like county lines, roads, rivers, etc
+
 # First, create a basic plot of the state of NJ using the broadband zip data
 # We'll use the counties() function to download a shape file from the US Census Bureau
-counties_nj <- counties(state = "NJ")
+counties_nj <- counties(state = "NJ", cb = FALSE)
+
+# The default behavior for cb = TRUE is to fetch the cartographic boundary file from the TIGER/Line database, which is the most detailed and also includes the legal boundary extending 3 miles from the coastline
 ggplot(counties_nj) +
   geom_sf()
 
 # Get the zctas (Zip Code Tabulated Areas) for NJ
 # Note, this won't take as long as the option "cb = FALSE"
-zctas_nj <- zctas(cb = TRUE, state = "NJ")
+# ZCTA is a geographic dataset that approximates zip codes, because zip codes themselves may change and aren't always tied to the same geographic locations
 
-# Find all ZIP codes for NJ
-zipcodes_nj <- search_state("NJ")
+# Download all ZCTAs
+zctas_nj <- zctas(state = "NJ")
 
-# Merge the two files into a single data frame, matching "zipcode" with "GEOID10"
-joined_data <- left_join(zipcodes_nj, zctas_nj, by = c("zipcode" = "GEOID10"))
+# Extract zip codes for NJ
+zipcodes_nj <- search_state("NJ") %>% 
+  mutate(zcta_test = is_zcta(zipcode), 
+         zipcode = as.numeric(zipcode))
 
-ggplot(zctas_nj) +
-  geom_sf()
+# Merge the broadband and zipcode code NJ data
+# Note, pad the postal code with a 0 on the left side
+broadband_data_nj <- left_join(broadband_zip, zipcodes_nj, 
+          by = c("postal_code" = "zipcode")) %>% 
+  filter(st == "NJ") %>% 
+  mutate(postal_code = as.character(postal_code), 
+         postal_code = str_pad(postal_code, 5, side = "left", pad = "0"))
+
+# Now that we have the broadband data for each postal code, merge with the ZCTA object to get the geometries
+broadband_spatial_nj <- geo_join(zctas_nj, broadband_data_nj, 
+         "ZCTA5CE10", "postal_code", 
+         how = "inner")
+
+# Finally, we need to look this with the original broadband dataset to get the broadband internet availability data 
+broadband_spatial_nj <- geo_join(broadband_spatial_nj, broadband, 
+         "county", "COUNTY NAME", how = "inner") %>% 
+  clean_names() %>% 
+  mutate(broadband_availability_per_fcc = as.numeric(broadband_availability_per_fcc))
+
+ggplot(broadband_spatial_nj) +
+  geom_sf(aes(fill = broadband_availability_per_fcc))
