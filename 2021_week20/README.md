@@ -1,6 +1,8 @@
 # README
 
-Source code and plots for the Tidy Tuesday 2021 Week #20 data set exploring broadband internet disparities in the United States.  The FCC defines the broadband internet standards as 25 Mbps (download) and 3 Mbps (upload).  I first explored the proportion of missing data per county across the United States, then decided to focus on my home state of New Jersey for a more detailed analysis.  Specifically, I compared the availability and usage of broadband internet access at the county level across the state.  Broadband availability and usage are defined as the percentage of people per county (where data are available) that have access to internet and use the internet at the defined download and upload speeds, respectively.  
+Source code and plots for the Tidy Tuesday 2021 Week #20 data set exploring broadband internet disparities in the United States.  More information on the dataset and motivations behind the analyses can be found [here](https://github.com/rfordatascience/tidytuesday/blob/master/data/2021/2021-05-11/readme.md).  
+
+The FCC defines the broadband internet standards as 25 Mbps (download) and 3 Mbps (upload).  I first explored the proportion of missing data per county across the United States, then decided to focus on my home state of New Jersey for a more detailed analysis.  Specifically, I compared the availability and usage of broadband internet access at the county level across the state.  Broadband availability and usage are defined as the percentage of people per county (where data are available) that have access to internet and use the internet at the defined download and upload speeds, respectively.  
 
 There are three additional files in this directory:
 
