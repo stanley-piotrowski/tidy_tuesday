@@ -45,7 +45,7 @@ broadband_zip <- tuesdata$broadband_zip %>%
 # Explore data
 glimpse(broadband)
 
-# Data contains five columns for the state (two letter code), county ID (double), county name (full name), broadband per fcc (percent of people per county with access to broadband at the end of 2017), and broadband usage (percent of people per county that actually use the broadband internet)
+# Data contains five columns for the state (two letter code), county ID (double), county name (full name), broadband per fcc guidelines (percent of people per county with access to broadband at the end of 2017), and broadband usage (percent of people per county that actually use the broadband internet)
 
 # Clean up column names ----
 broadband <- broadband %>% 
